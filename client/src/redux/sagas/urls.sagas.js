@@ -1,16 +1,31 @@
 import { put, takeEvery } from 'redux-saga/effects';
 import axios from 'axios';
 
-// Matches Dashboard
 export function* fetch_all_urls() {
-  console.log('fetching urls - first func');
   yield takeEvery('FETCH_ALL_URLS', fetch_all_urls_from_db);
 }
 
-// Matches Reducer
 function* fetch_all_urls_from_db() {
-  console.log('fetching urls, calling reducer');
   const urls = yield axios.get('http://localhost:5000/fetch/getAll');
-  console.log('urls are in sagas', urls);
   yield put({ type: 'FETCH_ALL_URLS_FROM_DB', payload: urls.data });
+}
+
+export function* delete_all_urls() {
+  yield takeEvery('DELETE_ALL_URLS', delete_all_urls_from_db);
+}
+
+function* delete_all_urls_from_db() {
+  yield axios.delete('http://localhost:5000/delete/deleteAll');
+  yield put({ type: 'DELETE_ALL_URLS_FROM_DB' });
+}
+
+export function* create_url() {
+  yield takeEvery('CREATE_URL', create_new_url);
+}
+
+function* create_new_url(payload) {
+  const originalUrl = payload.values.url;
+  const urls = yield axios.post('http://localhost:5000/create/createUrl', { originalUrl });
+  yield put({ type: 'CREATE_NEW_URL', payload: urls.data });
+  yield fetch_all_urls_from_db();
 }
