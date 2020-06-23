@@ -26,6 +26,15 @@ export function* create_url() {
 function* create_new_url(payload) {
   const originalUrl = payload.values.url;
   const urls = yield axios.post('http://localhost:5000/create/createUrl', { originalUrl });
-  yield put({ type: 'CREATE_NEW_URL', payload: urls.data });
-  yield fetch_all_urls_from_db();
+
+  // if url exists, put it in redux
+  if (urls.data.substring(0, 3) === 'Url') {
+    const existingUrl = urls.data.substring(13, urls.data.length);
+    yield put({ type: 'GET_EXISTING_REDIRECT_URL', payload: existingUrl });
+
+    // otherwise, create it
+  } else {
+    yield put({ type: 'CREATE_NEW_URL', payload: urls.data });
+    yield fetch_all_urls_from_db();
+  }
 }

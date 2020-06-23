@@ -59,6 +59,18 @@ const Dashboard = () => {
     );
   };
 
+  // if url exists in db, show it
+  const showExistingUrl = () => {
+    return (
+      <div style={{ margin: 20 }}>
+        <h3>Shortened Url already exists for this url</h3>
+        <a href={dataFromRedux.existing_url} target='_blank' rel='noopener noreferrer'>
+          <span style={{ fontSize: 20 }}> go to url</span>
+        </a>
+      </div>
+    );
+  };
+
   return (
     <div style={{ margin: 20 }}>
       {/* If data has yet to be fetched from the db, show the Spinner */}
@@ -68,7 +80,11 @@ const Dashboard = () => {
         </div>
       ) : (
         <div>
-          <h1>Please insert a url to be shortened</h1>
+          {dataFromRedux.existing_url ? (
+            showExistingUrl()
+          ) : (
+            <h1>Please insert a url to be shortened</h1>
+          )}
           {showForm()}
           <ShowTable urlsDataFromRedux={dataFromRedux} />
         </div>
