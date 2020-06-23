@@ -14,12 +14,13 @@ const columns = [
   {
     title: 'Original url',
     dataIndex: 'originalUrl',
-    align: 'center',
+    align: 'left',
   },
   {
     title: 'Was url shortened',
     dataIndex: 'shortened',
     align: 'center',
+    fixed: 'right',
   },
 ];
 
