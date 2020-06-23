@@ -14,22 +14,39 @@ const isShorterCalculator = (originalUrl, shortUrl) => {
   return isShorter > 0 ? '😁' : '😢';
 };
 
+const doesUrlExist = async (originalUrl) => {
+  const doesExist = await Url.findOne({ originalUrl: originalUrl });
+  return doesExist;
+};
+
+const fetchRedirectUrl = async (originalUrl) => {
+  const getUrl = await Url.findOne({ originalUrl });
+  return getUrl.shortUrl;
+};
+
 router.post('/createUrl', async (req, res) => {
   try {
     const { originalUrl } = req.body;
     const isUrlValid = validateUrl(originalUrl);
     if (isUrlValid) {
-      // base url to build upon
-      const homeUrl = 'http://localhost:5000/wopa/';
-      // generate a random string to be the new url
-      const shortUrl = homeUrl + shortid.generate();
-      const shortened = isShorterCalculator(originalUrl, shortUrl);
-      await new Url({
-        shortUrl,
-        originalUrl,
-        shortened,
-      }).save();
-      res.send(shortUrl);
+      // check if url already exists
+      const doesExist = await doesUrlExist(originalUrl);
+      if (doesExist) {
+        const getRedirectionUrl = await fetchRedirectUrl(originalUrl);
+        res.status(200).send(`Url exists', ${getRedirectionUrl}`);
+      } else {
+        // base url to build upon
+        const homeUrl = 'http://localhost:5000/';
+        // generate a random string to be the new url
+        const shortUrl = homeUrl + shortid.generate();
+        const shortened = isShorterCalculator(originalUrl, shortUrl);
+        await new Url({
+          shortUrl,
+          originalUrl,
+          shortened,
+        }).save();
+        res.send(shortUrl);
+      }
     } else {
       throw new Error('url not valid');
     }

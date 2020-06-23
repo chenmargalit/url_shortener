@@ -16,7 +16,7 @@ const urlSchema = new Schema({
   expireAt: {
     type: Date,
     default: Date.now,
-    createIndexes: { expires: '5m' },
+    createIndexes: { expires: '24h' },
   },
 });
 

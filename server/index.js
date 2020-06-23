@@ -40,9 +40,9 @@ app.get('/', (req, res) => {
 });
 
 // shortening of a url is based on this function. It generates a new url with my host (localhost:5000), a signal (wopa) and fetched the original url that should be redirected to
-app.get('/wopa/:url', async (req, res) => {
+app.get('/:url', async (req, res) => {
   const dataFromDB = await Url.findOne({
-    shortUrl: `http://localhost:5000/wopa/${req.params.url}`,
+    shortUrl: `http://localhost:5000/${req.params.url}`,
   });
   //
   res.redirect(dataFromDB.originalUrl);
