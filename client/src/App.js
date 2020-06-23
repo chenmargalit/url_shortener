@@ -1,10 +1,12 @@
 import React from 'react';
+import 'antd/dist/antd.css';
+import Dashboard from './components/Dashboard';
 
 function App() {
   return (
     <div>
       <div>
-        <h1>Dashboard will come here</h1>
+        <Dashboard />
       </div>
     </div>
   );
