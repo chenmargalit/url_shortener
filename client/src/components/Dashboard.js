@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Input, Button } from 'antd';
 import ShowTable from './Table';
+import { validateUrl } from '../utils/urlValidation';
+import { Spin } from 'antd';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const [error, setError] = useState('');
 
   useEffect(() => {
     dispatch({ type: 'FETCH_ALL_URLS' });
@@ -12,19 +15,26 @@ const Dashboard = () => {
 
   const dataFromRedux = useSelector((state) => state);
 
+  // form styles
   const layout = {
     wrapperCol: { span: 22 },
   };
 
+  // delete all urls function
   const deleteAll = () => {
-    console.log('delete all');
     dispatch({ type: 'DELETE_ALL_URLS' });
   };
 
   const showForm = () => {
+    // Send form. Takes the url and checks for validity
     const onFinish = (values) => {
-      console.log('dispatching');
-      dispatch({ type: 'CREATE_URL', values });
+      const isValid = validateUrl(values.url);
+      if (isValid) {
+        setError('');
+        dispatch({ type: 'CREATE_URL', values });
+      } else {
+        setError('Url is not valid');
+      }
     };
 
     return (
@@ -34,10 +44,10 @@ const Dashboard = () => {
           name='url'
           rules={[{ required: true, message: 'Please provide a url' }]}
         >
-          <Input />
+          <Input placeholder='Please specify a url in the form of https://example.com' />
         </Form.Item>
-
         <Form.Item>
+          {error ? <h3 style={{ color: 'red', marginLeft: 40 }}>{error}</h3> : null}
           <Button size='large' type='primary' htmlType='submit'>
             Submit
           </Button>
@@ -48,13 +58,21 @@ const Dashboard = () => {
       </Form>
     );
   };
+
   return (
     <div style={{ margin: 20 }}>
-      <div>
-        <h1>Please insert the url</h1>
-        {showForm()}
-        {dataFromRedux && <ShowTable urlsDataFromRedux={dataFromRedux} />}
-      </div>
+      {/* If data has yet to be fetched from the db, show the Spinner */}
+      {!dataFromRedux.urls ? (
+        <div style={{ textAlign: 'center', paddingTop: '40%' }}>
+          <Spin size='large' />
+        </div>
+      ) : (
+        <div>
+          <h1>Please insert a url to be shortened</h1>
+          {showForm()}
+          <ShowTable urlsDataFromRedux={dataFromRedux} />
+        </div>
+      )}
     </div>
   );
 };

@@ -24,6 +24,7 @@ const columns = [
 ];
 
 const showTable = (props) => {
+  console.log('props', props.urlsDataFromRedux.urls);
   return (
     <Table
       columns={columns}
